@@ -1,9 +1,13 @@
 import React from 'react';
+import { Toaster } from "react-hot-toast";
 import FloatingShape from './components/FloatingShape.jsx';
 import { Route, Routes } from 'react-router-dom';
 import SignUpPage from './pages/SignUpPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
-import EmailVerificationPage from './components/EmailVerificationPage.jsx';
+import EmailVerificationPage from './pages/EmailVerificationPage.jsx';
+import HomePage from './pages/HomePage.jsx';
+
+
 
 function App() {
   return (
@@ -36,12 +40,14 @@ function App() {
         left="-10%"
         delay={2}
       />
+
       <Routes>
-        <Route path="/" element={<h1>Home</h1>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path='/verify-email' element={<EmailVerificationPage />} />
       </Routes>
+      <Toaster />
     </div>
   );
 }
