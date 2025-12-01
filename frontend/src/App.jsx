@@ -1,8 +1,8 @@
 import React from 'react';
-import FloatingShape from '../components/FloatingShape.jsx';
+import FloatingShape from './components/FloatingShape.jsx';
 import { Route, Routes } from 'react-router-dom';
-import SignUpPage from '../pages/SignUpPage.jsx';
-import LoginPage from '../pages/LoginPage.jsx';
+import SignUpPage from './pages/SignUpPage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
 
 function App() {
   return (
