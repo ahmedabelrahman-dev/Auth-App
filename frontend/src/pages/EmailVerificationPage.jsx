@@ -10,8 +10,7 @@ const EmailVerificationPage = () => {
 	const navigate = useNavigate();
 
 		const { error, isLoading, verifyEmail } = useAuthStore();
-		// const error = null
-		// const isLoading = false
+		
 
 	const handleChange = (index, value) => {
 		const newCode = [...code];

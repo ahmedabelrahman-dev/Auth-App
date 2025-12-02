@@ -1,15 +1,50 @@
-import React from 'react';
-import { Toaster } from "react-hot-toast";
+import { Toaster } from 'react-hot-toast';
 import FloatingShape from './components/FloatingShape.jsx';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import SignUpPage from './pages/SignUpPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import EmailVerificationPage from './pages/EmailVerificationPage.jsx';
 import HomePage from './pages/HomePage.jsx';
+import { useAuthStore } from './store/authStore';
+import { useEffect } from 'react';
+import LoadingSpinner from './components/LoadingSpinner.jsx';
+import DashboardPage from './pages/DashboardPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 
+// protect routes that require authentication
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
 
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
+  if (!user.isVerified) {
+    return <Navigate to="/verify-email" replace />;
+  }
+
+  return children;
+};
+
+// redirect authenticated users to home page
+const RedirectAuthenticatedUser = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+
+  if (isAuthenticated && user.isVerified) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
 function App() {
+  const { isCheckingAuth, checkAuth } = useAuthStore();
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  if (isCheckingAuth) return <LoadingSpinner />;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900 flex items-center justify-center relative overflow-hidden">
       {/* Optional: Background floating shapes to match the aesthetic */}
@@ -17,7 +52,6 @@ function App() {
         <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] rounded-full bg-[radial-gradient(circle_400px_at_50%_300px,#22c55e33,#0000)]" />
       </div>
       <FloatingShape
-        className="absolute rounded-full bg-green-500 w-64 h-64 opacity-20 blur-xl top-10% left-10%"
         color="bg-green-500"
         size="w-64 h-64"
         top="-5%"
@@ -25,7 +59,6 @@ function App() {
         delay={0}
       />
       <FloatingShape
-        className="absolute rounded-full bg-emerald-500 w-48 h-48 opacity-20 blur-xl top-70% left-80%"
         color="bg-emerald-500"
         size="w-48 h-48"
         top="70%"
@@ -33,7 +66,6 @@ function App() {
         delay={5}
       />
       <FloatingShape
-        className="absolute rounded-full bg-lime-500 w-32 h-32 opacity-20 blur-xl top-40% left-10%"
         color="bg-lime-500"
         size="w-32 h-32"
         top="40%"
@@ -42,10 +74,48 @@ function App() {
       />
 
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path='/verify-email' element={<EmailVerificationPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <RedirectAuthenticatedUser>
+              <SignUpPage />
+            </RedirectAuthenticatedUser>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <RedirectAuthenticatedUser>
+              <LoginPage />
+            </RedirectAuthenticatedUser>
+          }
+        />
+        <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route
+          path="/reset-password/:token"
+          element={
+            <ProtectedRoute>
+              <ResetPasswordPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <Toaster />
     </div>
